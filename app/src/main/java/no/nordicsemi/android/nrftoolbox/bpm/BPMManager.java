@@ -46,6 +46,10 @@ public class BPMManager extends BleManager<BPMManagerCallbacks> {
 
 	private BluetoothGattCharacteristic mBPMCharacteristic, mICPCharacteristic;
 
+
+	public final static UUID ALI_SERVICE_UUID = UUID.fromString("0000FEB3-0000-1000-8000-00805f9b34fb");
+	private BluetoothGattCharacteristic mIndicate;
+
 	private static BPMManager managerInstance = null;
 
 	/**
@@ -75,25 +79,29 @@ public class BPMManager extends BleManager<BPMManagerCallbacks> {
 		@Override
 		protected Deque<Request> initGatt(final BluetoothGatt gatt) {
 			final LinkedList<Request> requests = new LinkedList<>();
-			if (mICPCharacteristic != null)
-				requests.add(Request.newEnableNotificationsRequest(mICPCharacteristic));
-			requests.add(Request.newEnableIndicationsRequest(mBPMCharacteristic));
+			if (mIndicate != null)
+				requests.add(Request.newEnableIndicationsRequest(mIndicate));
+//			requests.add(Request.newEnableIndicationsRequest(mBPMCharacteristic));
 			return requests;
 		}
 
 		@Override
 		protected boolean isRequiredServiceSupported(final BluetoothGatt gatt) {
-			BluetoothGattService service = gatt.getService(BP_SERVICE_UUID);
+			BluetoothGattService service = gatt.getService(ALI_SERVICE_UUID);
 			if (service != null) {
-				mBPMCharacteristic = service.getCharacteristic(BPM_CHARACTERISTIC_UUID);
-				mICPCharacteristic = service.getCharacteristic(ICP_CHARACTERISTIC_UUID);
+//				mBPMCharacteristic = service.getCharacteristic(BPM_CHARACTERISTIC_UUID);
+//				mICPCharacteristic = service.getCharacteristic(ICP_CHARACTERISTIC_UUID);
+
+				mIndicate = service.getCharacteristic(UUID.fromString("0000FED6-0000-1000-8000-00805F9B34FB"));
 			}
-			return mBPMCharacteristic != null;
+//			return mBPMCharacteristic != null;
+			return mIndicate != null;
 		}
 
 		@Override
 		protected boolean isOptionalServiceSupported(final BluetoothGatt gatt) {
-			return mICPCharacteristic != null;
+//			return mICPCharacteristic != null;
+			return true;
 		}
 
 		@Override

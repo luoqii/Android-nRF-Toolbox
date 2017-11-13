@@ -37,6 +37,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -210,6 +211,7 @@ public class ScannerFragment extends DialogFragment {
 	 * using class ScannerServiceParser
 	 */
 	private void startScan() {
+		Log.d(TAG," startScan");
 		// Since Android 6.0 we need to obtain either Manifest.permission.ACCESS_COARSE_LOCATION or Manifest.permission.ACCESS_FINE_LOCATION to be able to scan for
 		// Bluetooth LE devices. This is related to beacons as proximity devices.
 		// On API older than Marshmallow the following code does nothing.
@@ -236,7 +238,7 @@ public class ScannerFragment extends DialogFragment {
 				.setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).setReportDelay(1000).setUseHardwareBatchingIfSupported(false).build();
 		final List<ScanFilter> filters = new ArrayList<>();
 		filters.add(new ScanFilter.Builder().setServiceUuid(mUuid).build());
-		scanner.startScan(filters, settings, scanCallback);
+		scanner.startScan(scanCallback);
 
 		mIsScanning = true;
 		mHandler.postDelayed(() -> {
@@ -264,10 +266,15 @@ public class ScannerFragment extends DialogFragment {
 		@Override
 		public void onScanResult(final int callbackType, final ScanResult result) {
 			// do nothing
+			List<ScanResult> list = new ArrayList<>();
+			list.add(result);
+			mAdapter.update(list);
+			Log.d(TAG, "onScanResult");
 		}
 
 		@Override
 		public void onBatchScanResults(final List<ScanResult> results) {
+			Log.d(TAG, "onBatchScanResults");
 			mAdapter.update(results);
 		}
 
